@@ -44,15 +44,15 @@ dev.off()
 # Fit the model
 
 library("rstan")
-# source("/Users/andrew/AndrewFiles/research/Stan/stan.R")
-fit1 <- stan("fromGelman/synchrony1.stan", data=c("N","y","J","species","year","type"), iter=100, chains=4) # 43 mins for 2000 iterations, 4 chains
-print(fit1)
+source("stan.R")
 
-fit_simple <- stan("synchrony_simple.stan", data=c("N","y","J","species","year","type"), iter=100, chains=4)
+fit_simple <- stan("synchrony_simple.stan", data=c("N","y","J","species","year","type"), iter=1000, chains=4)
 print(fit_simple)
-
 
 # Look at the results
 library("shinyStan")
-launch_shinystan(fit1)
+launch_shinystan(fit_simple)
+
+fit_1 <- stan("synchrony1.stan", data=c("N","y","J","species","year","type"), iter=1000, chains=4)
+print(fit_1)
 
