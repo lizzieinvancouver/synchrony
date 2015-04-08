@@ -47,11 +47,11 @@ dev.off()
 # Fit the model
 
 library("rstan")
+source("stan.R")
 
-fit_simple <- stan("stan/synchrony_simple_emw.stan", data=c("N","y","J","species","year","type"), iter=2000, chains=4)
+fit_simple <- stan("synchrony_simple.stan", data=c("N","y","J","species","year","type"), iter=2000, chains=4)
 print(fit_simple)
 
 # Look at the results
 library("shinyStan")
 launch_shinystan(fit_simple)
-

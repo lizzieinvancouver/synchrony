@@ -53,6 +53,8 @@ print(fit_simple)
 library("shinyStan")
 launch_shinystan(fit_simple)
 
-fit_1 <- stan("synchrony1.stan", data=c("N","y","J","species","year","type"), iter=1000, chains=4)
-print(fit_1)
+fit1 <- stan("synchrony1.stan", data=c("N","y","J","species","year","type"), iter=1000, chains=4)
+print(fit1)
+launch_shinystan(fit1)
+
 

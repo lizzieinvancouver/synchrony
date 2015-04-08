@@ -2,7 +2,7 @@ data {
   int N;                                  // # data points
   real y[N];
   int J;                                  // # species
-  int species[N];			  // # Lizzie does not understand this
+  int species[N];
   real year[N];
   int<lower=1,upper=2> type[J];           // species type
 }
@@ -25,7 +25,7 @@ model {
     s <- species[n];
     t <- type[s];
     ypred[n] <- level[t] + sigma_level[t]*species_level[s] +
-                  (trend[t] + sigma_trend[t]*species_trend[s])*year[t];
+                  (trend[t] + sigma_trend[t]*species_trend[s])*year[n];
   }
   y ~ normal(ypred, sigma_y);
 } 
