@@ -1,3 +1,6 @@
+// Similar to synchrony_simple.stan but ...
+// removes all reference to trends
+
 data {
   int N;                                  // # data points
   real y[N];
@@ -7,10 +10,7 @@ data {
   int<lower=1,upper=2> type[J];           // species type
 }
 parameters {
-  real trend[2];                          // avg trend for type
   real<lower=0> sigma_y;
-  real species_trend[J];                  // trend for species, relative to trend for type
-  real<lower=0> sigma_trend[2];
   real level[2];                          // avg level for type
   real species_level[J];
   real<lower=0> sigma_level[2];  
@@ -18,7 +18,6 @@ parameters {
 model {
   real ypred[N];
   species_level ~ normal(0,1);
-  species_trend ~ normal(0,1);
   for (n in 1:N){
     int s;
     int t;
