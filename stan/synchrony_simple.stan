@@ -1,5 +1,5 @@
-// Similar to synchrony_simple.stan but ...
-// removes all reference to trends
+// Similar to something once called synchrony1.stan but ...
+// removes all reference to trends and fits just an intercept model
 
 data {
   int N;                                  // # data points
