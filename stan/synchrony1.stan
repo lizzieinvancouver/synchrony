@@ -1,3 +1,7 @@
+// Created 8 Apr 2015 by A Gelman
+// Includes species nested within 'species type'
+// In May 2015 we abadoned type idea as it is not true species characteristic 
+
 data {
   int N;                                  // # data points
   real y[N];
