@@ -4,6 +4,8 @@
 ## Plots with Heather's synchrony data ##
 ## Some bits adapted from Heather's code ##
 
+## Updated 9 September 2015 to updated data (not finished completely) ##
+
 options(stringsAsFactors = FALSE)
 
 setwd("~/Documents/git/projects/trophsynch/synchrony")
@@ -11,15 +13,14 @@ library(ggplot2)
 library(reshape)
 
 # in the data file: spp1 = neg= negative species e.g. resource 
-data <- read.csv("input/alldata_lizzie.csv", header=TRUE)
-studies <- read.csv("input/studies.csv", header=TRUE)
+# data <- read.csv("input/alldata_lizzie.csv", header=TRUE)
+# studies <- read.csv("input/studies.csv", header=TRUE)
 
-studiessm <- subset(studies, select=c("studyid", "terrestrial2"))
+# studiessm <- subset(studies, select=c("studyid", "terrestrial2"))
 
 # clean raw data
-source("source/additionalcleaning_lizzie.R")
-raw <- mat
-write.csv(raw, "output/raw.csv", row.names=FALSE)
+source("datacleaning.R")
+raw <- raw
 
 # reshape into long format (do a double melt)
 # Note that in Heather's email of 22 Apr 2014: "in the change from short to long format,
@@ -45,8 +46,8 @@ raw.mm[grep("phenovalue", raw.mm$whatmeasured),]$whatmeasured <- "phenovalue"
 
 write.csv(raw.mm, "output/alldata_long.csv", row.names=FALSE)
 
-## raw long format data from Heather
-rawlong <- read.csv("input/indiv_sppdata.csv", header=TRUE)
+## raw long format data from Heather: now included in datacleaning.R
+# rawlong <- read.csv("input/indiv_sppdata.csv", header=TRUE)
 # Need to add in spp1 versus spp2 and intid to use it
 spp1or2fromraw <- subset(raw, select=c("spp1","spp2", "intid", "interaction"))
 spp1or2melt <- melt(spp1or2fromraw, measure.var=c("spp1", "spp2"))
@@ -63,6 +64,8 @@ write.csv(spp1or2.nodup, "output/speciesdata.csv", row.names=FALSE)
 # I want the interaction type and the minyear cols also
 # Need to also add colors by biome or habitat
 
+# for now I am commenting this out since I am not sure where 'data' comes from below (9 Sep 2015) #
+if(FALSE) {
 rowcount<-1
 datawmax <- aggregate(data["year"], by=data[c("studyid","intid")], FUN=max); names(datawmax)[3]<-"maxyear"
 datawmax <- merge(data, datawmax, by=c("studyid","intid"), all.x=TRUE)
@@ -98,7 +101,7 @@ rowcount<-rowcount+2
 }
 nup$spp<-with(nup, c(1:2)) 
 unique(nup$interaction)
-
+}
 
 
 ###############

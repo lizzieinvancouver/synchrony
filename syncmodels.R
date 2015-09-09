@@ -3,7 +3,7 @@
 
 ## Trying to run STAN with synchrony data ##
 
-## Last updated 20 August 2015 ##
+## Last updated 9 Sep 2015 to updated data ##
 
 
 # Note that Heather calls synchrony1_notype_wcovar.stan 
@@ -12,17 +12,15 @@
 rm(list=ls()) 
 options(stringsAsFactors = FALSE)
 
+# setwd("/users/kharouba/google drive/UBC/synchrony project/analysis/stan")
 setwd("~/Documents/git/projects/trophsynch/synchrony")
+
 library(ggplot2)
 library(rstan)
 # library(lme4)
 
 # get data
-# in the data file: spp1 = neg= negative species e.g. resource 
-raw <- read.csv("output/raw.csv", header=TRUE)
-rawlong <- read.csv("input/indiv_sppdata2.csv", header=TRUE)
-rawlong$int_type[which(rawlong$int_type=="poll")] <- "pollination"
-rawlong.X <- NULL
+source("datacleaning.R")
 
 ##
 # figure out how many unique species
@@ -99,9 +97,9 @@ makehingeplot <- function(intidhere, specieslist){
 
 makehingeplot("170", c("Phytoplankton1 spp.", "Daphnia3 spp."))
 makehingeplot("171", c("Perca fluviatillis"))
-makehingeplot("177", c("Caterpillar spp.", "Parus1 major"))
+makehingeplot("177", c("Caterpillar_a spp.", "Parus1 major"))
 makehingeplot("178", c("Ficedula1 albicollis"))
-makehingeplot("179", c("Quercus2 robur", "Caterpillar spp."))
+makehingeplot("179", c("Quercus2 robur", "Caterpillar_c spp."))
 makehingeplot("180", c("Operophtera brumata", "Parus2 major"))
 
 # 1981 only -- add in 191, 193, 201, 207, 208

@@ -5,6 +5,18 @@
 
 setwd("~/Documents/git/projects/trophsynch/synchrony")
 source("syncmodels.R")
+setwd("~/Documents/git/projects/trophsynch/synchrony")
+source("syncmodels.R")
+
+# First, plot the real data used in the model (no dups)
+pdf("graphs/realdata_formodel.pdf", height=4, width=6)
+par(mar=c(3,3,1,1), mgp=c(1.5,.5,0), tck=-.01)
+plot(range(year), range(y), type="n", xlab="Year", ylab="Day of year", bty="l", main="Raw real data (after cleaning)")
+for (j in 1:J){
+  lines(year[species==j], y[species==j])
+}
+hist(y, xlab="Day of year", main="Real data, cleaned")
+dev.off()
 
 # look at output 
 goo <- extract(fit.notypewcov)
@@ -31,13 +43,15 @@ y <- rnorm(N, ypred, sigma_y)
 # Plot the data
 pdf("graphs/onepredictivecheck.pdf", height=4, width=6)
 par(mar=c(3,3,1,1), mgp=c(1.5,.5,0), tck=-.01)
-plot(range(year), range(y), type="n", xlab="Year", ylab="Day of year", bty="l", main="Data from posterior means")
+plot(range(year), range(y), type="n", xlab="Year", ylab="Day of year",
+    bty="l", main="Data from posterior means")
 for (j in 1:J)
   lines(year[species==j], y[species==j])
+hist(y, xlab="Day of year", main="Data from posterior means")
 dev.off()
 
 
-## The above uses the year, N and J of the real data
+## The above uses the year, N and J of the *real data* ##
 ## The below would let you change the year but I found it unrealistically gave
 # too many longer time series so for now just using N, J and year from the real data ##
 year_0 <- 1976 
@@ -48,3 +62,4 @@ year <- rep(NA, N)
 for (j in 1:J){
   year[species==j] <- rev(2009 - 1:(n_data_per_species[j])) - year_0
 }
+
