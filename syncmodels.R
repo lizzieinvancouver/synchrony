@@ -170,7 +170,8 @@ spptrends.fitnotypewcovar.fromstan <- as.vector(yy[[1]][,1])[72:142]
 
 stop("Lizzie made the code stop here")
 
-# Margaret Kosmala's model with no type
+
+# Margaret Kosmala's model with no type and no hinge
 fit.notype <- stan("stan/synchrony1_notype.stan", data=c("N","y","J","species","year"), iter=2000, chains=3)
 print(fit.notype)
 
@@ -180,6 +181,34 @@ spptrends.fitnotype.fromstan <- as.vector(zz[[1]][,1])[72:142]
 
 # model with type (resource or consumer); the one and only original
 fit1 <- stan("stan/synchrony1.stan", data=c("N","y","J","species","year","type"), iter=1000, chains=4)
+
+# Heather's code to add in data formatted for hinge model
+hinge <- subset(rawlong.nodups, intid=="170" | intid=="171" | intid=="177" |
+    intid=="178" | intid=="179" | intid=="180" |intid=="181" | intid=="189" |
+    intid=="191"|intid=="193" |intid=="194" | intid=="195" |intid=="196"|
+    intid=="201" |intid=="207" |intid=="208")
+hinge_non <- subset(rawlong.nodups, intid!="170" & intid!="171" & intid!="177"
+     & intid!="178" & intid!="179" & intid!="180" & intid!="181" & intid!="189"
+     & intid!="191" & intid!="193" & intid!="194" & intid!="195" & intid!="196"
+     & intid!="201" & intid!="207" & intid!="208")
+hinge_non$newyear<-hinge_non$year
+hinge_pre<-subset(hinge, year<=1981); hinge_pre$newyear<-1981
+hinge_post<-subset(hinge, year>1981); hinge_post$newyear<-hinge_post$year
+hinges<-rbind(hinge_pre, hinge_post)
+rawlong.tot<-rbind(hinge_non, hinges)
+
+rawlong.tot$yr1981 <- rawlong.tot$newyear-1981
+N <- nrow(rawlong.tot)
+y <- rawlong.tot$phenovalue
+specieschar.hin<- aggregate(rawlong.tot["phenovalue"], rawlong.tot[c("studyid", "species", "int_type", "spp")], FUN=length)
+J <- nrow(specieschar.hin)
+species <- as.numeric(as.factor(rawlong.tot$species))
+year <- rawlong.tot$yr1981
+nVars <-1
+Imat <- diag(1, nVars)
+
+# Margaret Kosmala's model with no type and with hinge
+fit.hinge <- stan("stan/synchrony1_notype_wcovar.stan", data=c("N","J","y","species","year","nVars","Imat"), iter=2000, chains=4)
 
 library("shinyStan")
 launch_shinystan(fit1)
@@ -246,6 +275,7 @@ legend("topleft", legend=c("no type", "no type w covar", "1:1"), pch=c(1,1,1),
 posvector <- rep(3, length(spptrends))
 text(spptrends$doybydec.lm, spptrends$doybydec.wcovar, labels=as.integer(spptrends$nyrs),
     cex=0.7, pos=posvector)
+
 
 
 write.csv(spptrends, "output/synchrony1spptrends.csv", row.names=FALSE)

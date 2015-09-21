@@ -1,6 +1,12 @@
-# Simulate fake data
+## Simulate fake data for no hinge and hinge model ##
+## By Heather, with some updates by Lizzie ##
 
-setwd("/users/kharouba/google drive/UBC/synchrony project/analysis/stan")
+rm(list=ls()) 
+options(stringsAsFactors = FALSE)
+library(rstan)
+
+# setwd("/users/kharouba/google drive/UBC/synchrony project/analysis/stan")
+setwd("~/Documents/git/projects/trophsynch/synchrony")
 
 # RANDOM SLOPE AND INTERCEPT MODEL #
 # Create the species-level parameters
@@ -39,6 +45,23 @@ for (j in 1:J)
   lines(year[species==j], y[species==j])
 dev.off()
 
+## check the model works and returns the slopes it was given
+nVars <-1
+Imat <- diag(1, nVars)
+# Margaret Kosmala's model with no type and no hinge
+fit.notype <- stan("stan/synchrony1_notype_wcovar.stan", data=c("N","J","y","species","year","nVars","Imat"), iter=2000, chains=4)
+
+summary(fit.notype) # sigma is about 5 (as it should be)
+ahere <- as.vector(summary(fit.notype)[[1]][,1])[1:30]
+bhere <- as.vector(summary(fit.notype)[[1]][,1])[31:60]
+
+plot(ahere~a, ylab="Intercepts estimated from Stan", xlab="Given intercepts")
+abline(0,1)
+
+plot(bhere~b, ylab="Slopes estimated from Stan", xlab="Given slopes")
+abline(0,1)
+abline(lm(bhere~b)) # this was off a little from 1:1 with sigma at 5 but it works perfectly with a lower sigma
+
 ### HINGE MODEL ###
 for (j in 1:J){
   w<-year[species==j]<=0 # or 1981
@@ -67,3 +90,19 @@ for (j in 1:J)
   lines(year[species==j], y[species==j])
 dev.off()
 
+## check the model works and returns the slopes it was given
+# first, add in two things you need to run the model
+nVars <-1
+Imat <- diag(1, nVars)
+# then run it!
+fit.hinge <- stan("stan/synchrony1_notype_wcovar.stan", data=c("N","J","y","species","year","nVars","Imat"), iter=2000, chains=4)
+
+summary(fit.hinge) # sigma is about 5 (as it should be)
+ahere <- as.vector(summary(fit.hinge)[[1]][,1])[1:30]
+bhere <- as.vector(summary(fit.hinge)[[1]][,1])[31:60]
+
+plot(ahere~a, ylab="Intercepts estimated from Stan", xlab="Given intercepts")
+abline(0,1)
+
+plot(bhere~b, ylab="Slopes estimated from Stan", xlab="Given slopes")
+abline(0,1) # on one simulation, the estimates all still fell on one to one but had more scatter, I turned down sigma_y to 0.5 and then they were on the 1:1 so the model works as it should, but we do have high error that could affect our estimates!
