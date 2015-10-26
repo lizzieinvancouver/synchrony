@@ -162,13 +162,26 @@ type <- as.numeric(as.factor(specieschar.formodel$spp))
 nVars <- 1
 Imat <- diag(1, nVars)
 fit.notypewcov <- stan("stan/synchrony1_notype_wcovar.stan", data=c("N","y","J","species","year", "nVars", "Imat"), iter=2000, chains=4)
+# Also possible to divide the up the model compilation and sampling (per Allen Riddel)
+# model <- stan_model("stan/synchrony1_notype_wcovar.stan") 
+# fit.notypewcov <- sampling(model, data, iter, chain) # check that sampling is correct command for R
+
+fit.notypewcov <- stan("stan/synchrony1_notype_wcovar.stan", data=c("N","y","J","species","year", "nVars", "Imat"), iter=2000, chains=4)
 print(fit.notypewcov)
 
 yy <- summary(fit.notypewcov)
 intercepts.fitnotypewcovar.fromstan <- as.vector(yy[[1]][,1])[1:71]
 spptrends.fitnotypewcovar.fromstan <- as.vector(yy[[1]][,1])[72:142]
 
+
 stop("Lizzie made the code stop here")
+
+
+# try to add in class to improve model
+classinfo <- read.csv("input/specieslist_classfromwiki.csv", header=TRUE) # alert: these class data come from Lizzie going through wikipedia and must be double-checked! For example, I don't think 'eudicot' is a class and I made plankton diatoms etc.
+rawlong.nodups.wclass <- merge(rawlong.nodups, classinfo, by="species", all.x=TRUE, all.y=TRUE)
+class <- as.numeric(as.factor(rawlong.nodups.wclass$class))
+
 
 
 # Margaret Kosmala's model with no type and no hinge
