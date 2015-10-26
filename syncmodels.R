@@ -181,7 +181,7 @@ stop("Lizzie made the code stop here")
 classinfo <- read.csv("input/specieslist_classfromwiki.csv", header=TRUE) # alert: these class data come from Lizzie going through wikipedia and must be double-checked! For example, I don't think 'eudicot' is a class and I made plankton diatoms etc.
 rawlong.nodups.wclass <- merge(rawlong.nodups, classinfo, by="species", all.x=TRUE, all.y=TRUE)
 class <- as.numeric(as.factor(rawlong.nodups.wclass$class))
-
+## now need to add in the model....
 
 
 # Margaret Kosmala's model with no type and no hinge
