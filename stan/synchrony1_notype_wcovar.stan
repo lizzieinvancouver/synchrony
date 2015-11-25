@@ -34,7 +34,7 @@ model {
     ypred[i] <- a[species[i]] + b[species[i]] * year[i];
   }
   y ~ normal(ypred, sigma_y);
-  a ~ normal(mu_a, sigma_a);
+  a ~ normal(mu_a, sigma_a); 
   b ~ normal(mu_b, sigma_b);
 } 
 
