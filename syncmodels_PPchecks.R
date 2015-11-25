@@ -55,7 +55,7 @@ dev.off()
 ## Last we met I was told to ....
 # mean of species' slopes from real data versus slopes from 100 runs of simulated data
 # sd of y versus sd of y from the 100 runs of simulated data
-## Add in uniform distribution for a for stan model and see if that improves anything (hmm, seems like that we already had ....
+## Add in uniform distribution for a for stan model and see if that improves anything (tried, won't run)
 
 
 # Create the data using new a and b for each of 71 species, 100 times

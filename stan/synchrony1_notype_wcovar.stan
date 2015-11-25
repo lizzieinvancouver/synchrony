@@ -34,7 +34,7 @@ model {
     ypred[i] <- a[species[i]] + b[species[i]] * year[i];
   }
   y ~ normal(ypred, sigma_y);
-  a ~ normal(mu_a, sigma_a); 
+  a ~ normal(mu_a, sigma_a); // Tried changing to uniform but "Exception thrown at line 37: stan::math::uniform_log: Upper bound parameter is 1.21591, but must be greater than 1.8004" 
   b ~ normal(mu_b, sigma_b);
 } 
 
