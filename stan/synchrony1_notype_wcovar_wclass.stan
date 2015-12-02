@@ -1,12 +1,13 @@
-// Major original edits by M Kosmala
-// from file called synchrony1_notype_MK.stan in gelmanhill/synchrony repo
-// updated to add covariance matrix by H Kharouba
+// Major original edits by Lizzie
+// trying to update synchrony1_notype_wcovar.stan file to add class to model
 
 data {
   int N;                                // # data points
   int J;                                // # species
+  int H;				// # class for each species
   vector[N] y;                          // DOY of pheno event
   int species[N];                       // species identity, coded as int
+  int class [N];			// class identity
   vector[N] year;                       // year of data point
   int nVars;					//number of predictors
   matrix[nVars, nVars] Imat;
@@ -34,7 +35,7 @@ model {
     ypred[i] <- a[species[i]] + b[species[i]] * year[i];
   }
   y ~ normal(ypred, sigma_y);
-  a ~ normal(mu_a, sigma_a); 
+  a ~ normal(mu_a, sigma_a);
   b ~ normal(mu_b, sigma_b);
 } 
 

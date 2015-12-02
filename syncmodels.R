@@ -3,7 +3,8 @@
 
 ## Trying to run STAN with synchrony data ##
 
-## Last updated 9 Sep 2015 to updated data ##
+## Last updated 1 December to look at interacting species and new model with random intercepts ##
+## Updated 9 Sep 2015 to updated data ##
 
 
 # Note that Heather calls synchrony1_notype_wcovar.stan 
@@ -158,9 +159,14 @@ type <- as.numeric(as.factor(specieschar.formodel$spp))
 # Run the model
 # source("source/stan.R")
 
-# Heather's update to Margaret Kosmala's model to add in covar matrix
+# Heather's update to random slopes, random intercepts, no type model (aka Margaret Kosmala's model) to add covar matrix
 nVars <- 1
 Imat <- diag(1, nVars)
+fit.notypewcov <- stan("stan/synchrony1_notype_wcovar.stan", data=c("N","y","J","species","year", "nVars", "Imat"), iter=2000, chains=4)
+# Also possible to divide the up the model compilation and sampling (per Allen Riddel)
+# model <- stan_model("stan/synchrony1_notype_wcovar.stan") 
+# fit.notypewcov <- sampling(model, data, iter, chain) # check that sampling is correct command for R
+
 fit.notypewcov <- stan("stan/synchrony1_notype_wcovar.stan", data=c("N","y","J","species","year", "nVars", "Imat"), iter=2000, chains=4)
 print(fit.notypewcov)
 
@@ -168,10 +174,11 @@ yy <- summary(fit.notypewcov)
 intercepts.fitnotypewcovar.fromstan <- as.vector(yy[[1]][,1])[1:71]
 spptrends.fitnotypewcovar.fromstan <- as.vector(yy[[1]][,1])[72:142]
 
+
 stop("Lizzie made the code stop here")
 
 
-# Margaret Kosmala's model with no type and no hinge
+# Random slopes, random intercepts, no type (aka Margaret Kosmala's model)
 fit.notype <- stan("stan/synchrony1_notype.stan", data=c("N","y","J","species","year"), iter=2000, chains=3)
 print(fit.notype)
 
@@ -181,6 +188,11 @@ spptrends.fitnotype.fromstan <- as.vector(zz[[1]][,1])[72:142]
 
 # model with type (resource or consumer); the one and only original
 fit1 <- stan("stan/synchrony1.stan", data=c("N","y","J","species","year","type"), iter=1000, chains=4)
+
+
+##
+## Hinge models
+##
 
 # Heather's code to add in data formatted for hinge model
 hinge <- subset(rawlong.nodups, intid=="170" | intid=="171" | intid=="177" |
@@ -207,11 +219,17 @@ year <- rawlong.tot$yr1981
 nVars <-1
 Imat <- diag(1, nVars)
 
-# Margaret Kosmala's model with no type and with hinge
+# Random slopes, random intercepts, no type (aka Margaret Kosmala's model) and with hinge
 fit.hinge <- stan("stan/synchrony1_notype_wcovar.stan", data=c("N","J","y","species","year","nVars","Imat"), iter=2000, chains=4)
 
-library("shinyStan")
-launch_shinystan(fit1)
+
+##
+## New model as of December 2015 here!
+# Random slopes only, no type (aka Margaret Kosmala's model) and with hinge
+fit.hinge.rs <- stan("stan/synchrony1_notype_randslops_wcovar.stan", data=c("N","J","y","species","year","nVars","Imat"), iter=2000, chains=4)
+
+library("shinystan")
+launch_shinystan(fit.hinge.rs)
 
 # fit1 <- stan("stan/synchrony1_wpreds.stan", data=c("N","y","J","species","year","type"), iter=1000, chains=4)
 
@@ -276,6 +294,45 @@ posvector <- rep(3, length(spptrends))
 text(spptrends$doybydec.lm, spptrends$doybydec.wcovar, labels=as.integer(spptrends$nyrs),
     cex=0.7, pos=posvector)
 
+
+###
+### New as of December 2015, trying to match up interacting species and look at differences ....
+####
+fh.sim <- extract(fit.hinge.rs) # extract(fit.notypewcov)
+dim(fh.sim$b)
+# here's one iteration
+fh.sim$b[2000,]
+
+specieschar.formodel.sm <- subset(specieschar.formodel, select=c("studyid", "species"))
+
+intid <- read.csv("input/raw_aug.csv", header=TRUE)
+intid.sm <- subset(intid, select=c("studyid", "spp1", "spp2", "intid" , "interaction"))
+intid.nodups <- intid.sm[!duplicated(intid.sm),]
+
+it1000 <- matrix(0, ncol=1000, nrow=192) # should fix someday so NAs go away
+## Lots of studyIDs don't match ....
+## "HMK006" "HMK007" "HMK010" "HMK012" "HMK015" "HMK020" "HMK021" "HMK027" "HMK031" "HMK048" "KJB003"
+for (i in 3000:4000){
+    specieschar.formodel.sm$model <- fh.sim$b[i,]
+    andtheanswer <- merge(intid.nodups, specieschar.formodel.sm, by.x=c("studyid", "spp1"),
+        by.y=c("studyid", "species"), all.x=TRUE)
+    andtheanswer <- merge(andtheanswer, specieschar.formodel.sm, by.x=c("studyid", "spp2"),
+        by.y=c("studyid", "species"), all.x=TRUE)
+    it1000[,(i-3000)] <- andtheanswer$model.x-andtheanswer$model.y
+}
+
+meanchange <- rowMeans(it1000, na.rm=TRUE)*10
+
+hist(meanchange, main="", xlab="change in synchrony (days/decade)", breaks=20)
+mean(meanchange, na.rm=TRUE) # they drift apart by half a day a decade
+
+andtheanswer <- cbind(andtheanswer, meanchange)
+
+library(ggplot2)
+ggplot(andtheanswer, aes(x=meanchange, fill=interaction)) +
+    geom_histogram(binwidth=0.5, alpha=0.5, position="identity")
+
+ggplot(andtheanswer, aes(x=meanchange, colour=interaction)) + geom_density()
 
 
 write.csv(spptrends, "output/synchrony1spptrends.csv", row.names=FALSE)
