@@ -2,6 +2,8 @@
 ## By Lizzie ##
 
 ## Trying to do predictive checks from Stan output ##
+## Code contains PP checks for a model with random slopes, random intercepts #
+## See notes on what to do for PP checks with non-random intercepts ##
 
 setwd("~/Documents/git/projects/trophsynch/synchrony")
 source("syncmodels.R")
@@ -17,7 +19,7 @@ hist(y, xlab="Day of year", main="Real data, cleaned")
 dev.off()
 
 # look at output 
-goo <- extract(fit.notypewcov)
+goo <- extract(fit.notypewcov) # goo <- extract(fit.hinge.rs)
 hist(goo$mu_b) # example!
 
 # extract means for now #
@@ -25,7 +27,7 @@ sigma_y <- mean(goo$sigma_y) # from stan output (which I named 'goo' for now)
 sigma_a <- mean(goo$sigma_a) # from stan output 
 sigma_b <- mean(goo$sigma_b) # from stan output 
 mu_b <- mean(goo$mu_b) # from stan output 
-mu_a <- mean(goo$mu_a) # from stan output 
+mu_a <- mean(goo$mu_a) # from stan output
 
 a <- rnorm(J, mean=mu_a, sd=sigma_a) # alert! perhaps should not set sd to sigma exactly?
 b <- rnorm(J, mean=mu_b, sd=sigma_b) # alert! perhaps should not set sd to sigma exactly?
@@ -64,7 +66,7 @@ y.sd100 <- matrix(0, ncol=100, nrow=J)
 for (i in 1:100){
     for (n in 1:N){
         s <- species[n]
-        ypred[n] <- a[s] + b[s]*year[n]
+        ypred[n] <- a[s] + b[s]*year[n] # replace a[s] with goo$a[1:J] when not pooled?
     }
   y <- rnorm(N, ypred, sigma_y)
   y.df <- as.data.frame(cbind(y, species))
