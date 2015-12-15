@@ -29,6 +29,7 @@ mytips <- read.csv("input/specieslist_classfromwiki.csv", header=TRUE)
 ##
 ## Progress from 11 December 2015 (thanks to JD) 
 library(rotl)
+library(ape)
 tr <- tol_induced_subtree(ott_ids=mytips$ott_id)
 tr <- compute.brlen(tr, method = "Grafen") # a very poor way to calculate branch lengths, we should impove it if we think phylogeny might matter at all!
 
