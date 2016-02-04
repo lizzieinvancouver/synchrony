@@ -224,6 +224,10 @@ for (i in 3000:4000){
 
 meanchange <- rowMeans(it1000, na.rm=TRUE)*10
 
+par(mfrow=(c(1,2)))
+# get the mean slope shifts
+mean(colMeans(fh.sim$b))*10 # they shift about 4 days/decade
+hist(colMeans(fh.sim$b)*10, main="", xlab="change in phenology (days/decade)", breaks=20)
 hist(meanchange, main="", xlab="change in synchrony (days/decade)", breaks=20)
 mean(meanchange, na.rm=TRUE) # they drift apart by half a day a decade
 
@@ -233,11 +237,38 @@ library(ggplot2)
 ggplot(andtheanswer, aes(x=meanchange, fill=interaction)) +
     geom_histogram(binwidth=0.5, alpha=0.5, position="identity")
 
-ggplot(andtheanswer, aes(x=meanchange, colour=interaction)) + geom_density()
+ggplot(andtheanswer, aes(x=meanchange, colour=interaction)) + geom_density() # I don't like geom_density but my default histogram is awful
+
+# histograms
+preds <- subset(andtheanswer, interaction=="predation")
+comps <- subset(andtheanswer, interaction=="competition")
+polln <- subset(andtheanswer, interaction=="pollination")
+herbiv <- subset(andtheanswer, interaction=="herbivory")
+paras <- subset(andtheanswer, interaction=="parasitism")
+mutul <- subset(andtheanswer, interaction=="mutuliasm")
+
+par(mfrow=c(2,3))
+xlim <- c(-17,17)
+hist(preds$meanchange, main="predators", xlab="change in phenology (days/decade)", breaks=20, xlim=xlim)
+hist(comps$meanchange, main="competitors", xlab="change in phenology (days/decade)", breaks=20, xlim=xlim)
+hist(polln$meanchange, main="pollination", xlab="change in phenology (days/decade)", breaks=20, xlim=xlim)
+hist(herbiv$meanchange, main="herbivory", xlab="change in phenology (days/decade)", breaks=20, xlim=xlim)
+hist(paras$meanchange, main="parasitism", xlab="change in phenology (days/decade)", breaks=20, xlim=xlim)
+hist(mutul$meanchange, main="mutualism", xlab="change in phenology (days/decade)", breaks=20, xlim=xlim)
+
+ggplot(andtheanswer, aes(x=meanchange, fill=interaction)) + 
+    geom_histogram(data = , fill = "red", alpha = 0.2) + 
+    geom_histogram(data = subset(andtheanswer, interaction==""), fill = "blue", alpha = 0.2) + 
+    geom_histogram(data = subset(andtheanswer, interaction==""), fill = "purple", alpha = 0.2) + 
+    geom_histogram(data = subset(andtheanswer, interaction=="herbivory"), fill = "green", alpha = 0.2) +
+    geom_histogram(data = subset(andtheanswer, interaction=="pollination"), fill = "orange", alpha = 0.2) + 
+    geom_histogram(data = subset(andtheanswer, interaction=="parasitism"), fill = "yellow", alpha = 0.2) 
 
 andtheanswer <- cbind(meanchange, andtheanswer)
 bigchanges <- subset(andtheanswer, abs(meanchange)>5)
 smallerchanges <- subset(andtheanswer, abs(meanchange)<5)
+
+andtheanswer.sm <- subset(andtheanswer, is.nan(meanchange)==FALSE)
 
 
 ##
