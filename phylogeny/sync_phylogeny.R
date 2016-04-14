@@ -27,13 +27,23 @@ setwd("~/Documents/git/projects/trophsynch/synchrony")
 mytips <- read.csv("input/specieslist_classfromwiki.csv", header=TRUE)
 
 ##
-## Progress from 11 December 2015 (thanks to JD) 
+## Progress from 11 December 2015 (thanks to JD)
+## see also: https://cran.r-project.org/web/packages/rotl/vignettes/how-to-use-rotl.html
+
+## update from late Jan 2016
+# Yes, rotl seems broken, try installing from github
+# https://github.com/ropensci/rotl
+# This seems to fix things (I had to specify build_vignette=F to get it to install)
+# install_github("ropensci/rotl", dependencies = TRUE, build_vignette=FALSE)
+# Note that install_github requires devtools package
+# As of 14 April 2016 I got the below to run, but I had to update R first!
 library(rotl)
 library(ape)
 tr <- tol_induced_subtree(ott_ids=mytips$ott_id)
 tr <- compute.brlen(tr, method = "Grafen") # a very poor way to calculate branch lengths, we should impove it if we think phylogeny might matter at all!
 
 dat<-read.csv("output/synchrony1spptrends.csv")
+lmfits <- read.csv("input/lmfits.csv", header=TRUE) # new file as of April 2016 with error from fits
 
 ott <- tr$tip.label
 pat <- "^.*?_ott([0-9]*)"
@@ -48,6 +58,10 @@ library(picante)
  k.dat<-dat$lmfits
  names(k.dat)<-dat$species
 phylosignal(k.dat, multi2di(match.tree), reps = 999)
+
+ k.var<-lmfits$varfits
+ names(k.var)<-lmfits$uniquespp
+phylosignal(k.var, multi2di(match.tree), reps = 999)
 
 # pretty plots
 library(phytools)
