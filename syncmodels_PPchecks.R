@@ -59,7 +59,7 @@ dev.off()
 # sd of y versus sd of y from the 100 runs of simulated data
 ## Add in uniform distribution for a for stan model and see if that improves anything (tried, won't run)
 
-## Last we met (1 Dec 2015) I said I would redo my b predictive checks using the new model
+## Last we met (1 Dec 2015) I said I would redo my b predictive checks using the new model (intercepts not pooled)
 
 # Create the data using new a and b for each of 71 species, 100 times
 y.sd100 <- matrix(0, ncol=100, nrow=J)
