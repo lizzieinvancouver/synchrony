@@ -117,7 +117,7 @@ for (j in 1:J)
 hist(y, xlab="Day of year", main="Data from posterior means")
 dev.off()
 # Hmm, the model makes more data than we seem to have ...
-# but I assume that is because of species rep issues?
+# but we assume that's because of repeating data issues (some lines in raw data figure are on top of each other)
 
 # compare a few things on this single new dataset
 par(mfrow=c(2,2))
